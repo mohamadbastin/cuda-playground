@@ -42,7 +42,7 @@ int main() {
 
 
 //    naiveVectorAdd(h_a, h_b, h_c, n);
-     vectorAdd<<<1, 10>>>(d_a, d_b, d_c);
+    vectorAdd<<<1, 10>>>(d_a, d_b, d_c);
 
     cudaDeviceSynchronize();
 
