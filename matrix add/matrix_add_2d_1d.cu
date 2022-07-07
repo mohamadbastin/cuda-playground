@@ -4,10 +4,9 @@
 #include "cstdio"
 #include "../common/common.cpp"
 
-__global__ void matrixAdd2D2D(float *A, float *B, float *C, int nx, int ny) {
-
+__global__ void matrixAdd2D1D(float *A, float *B, float *C, int nx, int ny) {
     unsigned int ix = blockDim.x * blockIdx.x + threadIdx.x;
-    unsigned int iy = blockDim.y * blockIdx.y + threadIdx.y;
+    unsigned int iy = blockIdx.y;
     unsigned int idx = iy * nx + ix;
 
     if (ix < nx && iy < ny) {
@@ -46,12 +45,11 @@ int main() {
     cudaMemcpy(d_B, h_B, bytes, cudaMemcpyHostToDevice);
 
     int dimx = 32;
-    int dimy = 32;
 
-    dim3 block(dimx, dimy);
+    dim3 block(dimx);
     dim3 grid((nx + block.x - 1) / block.x, (ny + block.y - 1) / block.y);
 
-    matrixAdd2D2D<<<grid, block>>>(d_A, d_B, d_C, nx, ny);
+    matrixAdd2D1D<<<grid, block>>>(d_A, d_B, d_C, nx, ny);
     cudaDeviceSynchronize();
 
     cudaMemcpy(gpu_ref, d_C, bytes, cudaMemcpyDeviceToHost);
